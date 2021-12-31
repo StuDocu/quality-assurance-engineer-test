@@ -1,0 +1,40 @@
+What I did:
+    * I changed the project to dockerized laravel app.
+    * I moved bundle.js to public/js.
+    * I moved style.js to public/js.
+    * I copied index.html and named it index.blade.php and they are located in resources/views.
+    * Everything is dockerized, so you don't have to install anything besides docker.
+    * I decided to dockerized the test so that it is easy to setup in any device, in every OS.
+    * Test scripts are located in tests/Browser/IndexTest.php
+
+Instructions (applicable in UbuntuOS):
+1. Clone repository.
+2. Inside repository, copy .env.example and name it to .env.
+3. If ever .env.dusk.local do not exist, copy .env.example and name it .env.dusk.local.
+4. Make sure that USE_SELENIUM=true is configured in .env.dusk.local
+5. Install docker if not yet installed.
+6. Inside repository, enter command "docker-compose up -d".
+7. After docker image installation, execute "docker exec -it qa-test bash" to get inside server's bash.
+8. To make sure that you are in the correct directory inside `qa-test` bash, enter command "cd /var/www/qa-test/".
+9. Inside `qa-test` bash, enter command "php artisan generate:key; composer install".
+10. Outside `qa-test` bash (meaning on your normal terminal), execute "npm install" and "npm run dev". I am not sure if this is necessary but just execute to make sure.
+11. Ports of images can be altered in docker-compose.yml, so please just configure it there if you want.
+
+/---
+To check that the web app is successfully deployed, access "http://localhost:8040" in a browser.
+/---
+
+Execute test automation framework:
+1. If docker images are down, inside repository, enter command "docker-compose up -d".
+2. If not inside `qa-test` bash, enter command "docker exec -it qa-test bash" to get inside server's bash".
+3. Inside 'qa-test' bash, enter command "php artisan dusk".
+4. You can check the test scripts on tests/Browser/IndexTest.php.
+     * Test display and hide instruction when toggling question.
+     * Test add question.
+     * Test sort questions.
+     * Test remove questions.
+     * Test add first question.
+     * Test question and answer fields are required.
+5. Components are seen on tests/Components/*.
+6. Pages are seen on tests/Pages/IndexPage.
+
