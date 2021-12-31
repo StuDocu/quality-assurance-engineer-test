@@ -1,0 +1,12 @@
+1. Install docker
+2. Enter command "docker-compose up -d"
+3. After docker image installation, execute "docker exec -it qa-test bash" to get inside server's bash
+4. To make sure that you are in the correct directory, inside `qa-test` bash, enter command cd /var/www/qa-test/
+4. Inside `qa-test` bash, enter command "php artisan generate:key; composer install"
+
+To check on browser, go to site by accessing "localhost:8040" if the site is accesible
+
+Execute test automation framework:
+1. Inside 'qa-test' bash, enter command "php artisan dusk"
+2. You can check the test scripts on tests/Browser/
+

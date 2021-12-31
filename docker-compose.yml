@@ -1,0 +1,94 @@
+version: '3'
+
+services:
+    #PHP Service
+    serve:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: digitalocean.com/php
+        container_name: qa-test
+        restart: unless-stopped
+        tty: true
+        environment:
+            SERVICE_NAME: app
+            SERVICE_TAGS: dev
+            working_dir: /var/www/qa-test
+        volumes:
+            - ./:/var/www/qa-test
+            - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+        depends_on:
+            - mysql
+            - selenium
+        networks:
+            - qa-test-network
+
+    #Nginx Service
+    nginx:
+        image: nginx:alpine
+        container_name: qa-test-nginx
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "8040:80"
+            - "446:443"
+        volumes:
+            - ./:/var/www/qa-test
+            - ./nginx/conf.d/:/etc/nginx/conf.d/
+        networks:
+            - qa-test-network
+
+    #MySQL Service
+    mysql:
+        image: mysql:latest
+        container_name: qa-test-mysql
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "3315:3306"
+        environment:
+            - MYSQL_DATABASE=qa-test
+            - MYSQL_USER=root
+            - MYSQL_ROOT_PASSWORD=root 
+        networks:
+            - qa-test-network
+        volumes:
+            - dbdata:/var/lib/mysql
+            - ./mysql/my.cnf:/etc/mysql/my.cnf
+    
+    #PHPMyAdmin
+    phpmyadmin:
+        container_name: qa-test-phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        environment:
+            PMA_HOST: mysql
+            MYSQL_USERNAME: root
+            MYSQL_ROOT_PASSWORD: root
+            PMA_PORT: 3306
+        ports:
+            - 5002:80
+        depends_on:
+            - mysql
+        restart: unless-stopped
+        networks:
+            - qa-test-network
+
+    #Selenium
+    selenium:
+        container_name: qa-test-selenium
+        image: selenium/standalone-chrome
+        ports:
+            - 4446:4444
+        restart: unless-stopped
+        networks:
+            - qa-test-network
+
+#Docker Networks
+networks:
+    qa-test-network:
+        driver: bridge
+
+#Volumes
+volumes:
+    dbdata:
+        driver: local
